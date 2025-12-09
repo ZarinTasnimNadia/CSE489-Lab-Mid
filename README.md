@@ -129,34 +129,24 @@ landmark/
    - The app requires an active internet connection to fetch and synchronize landmarks with the backend server
    - No local caching or offline mode currently implemented
 
-2. **Image Storage**
-   - Images are picked locally but handling depends on backend implementation
-   - Image size/quality optimization is performed but may impact older devices with limited storage
-
-3. **Map Features**
-   - Map is currently centered on Bangladesh only
-   - Limited map customization options (no zoom level persistence)
-   - No map clustering for high-density landmark areas
-
-4. **Authentication**
+2. **Authentication**
    - No user authentication or authorization system implemented
    - All landmarks are publicly visible and editable
 
-5. **Data Validation**
+3. **Data Validation**
    - Limited input validation on landmark creation/editing
    - No duplicate detection for landmarks
 
-6. **Performance**
+4. **Performance**
    - Performance may degrade with very large numbers of landmarks (100+)
    - Image loading on maps could be optimized further
 
-7. **Platform Support**
-   - Web platform support may have limited functionality compared to mobile
-   - Some features may not work as expected on older Android versions (API < 21)
+5. **Marker Selection**
+   - Multiple marker at the same area makes it hard to specifically select one marker
 
-8. **API Dependency**
-   - The app is tightly coupled to the backend API at `https://labs.anontech.info/cse489/t3/`
-   - No graceful handling of API downtime or connection errors beyond basic error messaging
+6. **Image Edit**
+   - In edit option, updating an image of a landmark fails and in New Entry page updating an image duplicates the landmark with the new image and add as a new entry keeping the old landmark unchanged
+
 
 ---
 
