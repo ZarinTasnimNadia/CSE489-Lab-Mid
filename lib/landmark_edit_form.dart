@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';                             
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;     
-import 'package:path_provider/path_provider.dart'; // ⭐️ NEW: Required for temporary directory
+import 'package:path_provider/path_provider.dart';
 import 'landmark.dart';
 import 'api_service.dart';
 
@@ -70,7 +70,7 @@ Future<void> _pickImage() async {
         throw Exception("Failed to decode image.");
       }
       
-      // 3. Resize the image to 800x600 (Required resolution)
+
       img.Image resizedImage = img.copyResize(
         originalImage, 
         width: 800, 
