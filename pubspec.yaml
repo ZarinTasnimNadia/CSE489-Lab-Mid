@@ -9,6 +9,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^2.2.3
+  provider: ^6.1.5+1
+  google_maps_flutter: ^2.14.0
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
+  http: ^1.6.0
+  image_picker: ^1.2.1
+  image: ^4.5.4
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +25,14 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icons/
+
+fonts:
+  - family: Saira
+    fonts:
+      - asset: fonts/static/Saira-Regular.ttf
+        weight: 400
+      - asset: fonts/static/Saira-Bold.ttf
+        weight: 700
+
