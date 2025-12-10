@@ -1,8 +1,6 @@
-// new_entry_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../theme_logic.dart'; // Import the theme logic
+import '../theme_logic.dart'; 
 import '../api_service.dart';
 import '../landmark.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,10 +8,11 @@ import 'dart:io';
 import 'dart:typed_data';                      
 import 'package:image/image.dart' as img;     
 import 'package:path_provider/path_provider.dart'; 
+import 'package:geolocator/geolocator.dart'; 
 
-// Constants
-const double _kInitialLat = 23.6850; // Bangladesh Center Lat
-const double _kInitialLon = 90.3563; // Bangladesh Center Lon
+
+const double _kInitialLat = 23.6850; 
+const double _kInitialLon = 90.3563; 
 
 enum FormMode { ADD, EDIT }
 
@@ -27,7 +26,7 @@ class NewEntryPage extends StatefulWidget {
 class _NewEntryPageState extends State<NewEntryPage> {
   final _formKey = GlobalKey<FormState>();
   
-  // Form Controllers
+
   late TextEditingController _titleController;
   late TextEditingController _latController; 
   late TextEditingController _lonController;
@@ -40,8 +39,13 @@ class _NewEntryPageState extends State<NewEntryPage> {
   void initState() {
     super.initState();
     _titleController = TextEditingController();
+    
+
     _latController = TextEditingController(text: _kInitialLat.toString());
     _lonController = TextEditingController(text: _kInitialLon.toString());
+
+
+    _getCurrentLocation();
   }
 
   @override
@@ -51,6 +55,51 @@ class _NewEntryPageState extends State<NewEntryPage> {
     _lonController.dispose();
     super.dispose();
   }
+  
+
+  Future<void> _getCurrentLocation({bool forceUpdate = false}) async {
+    if (_currentMode != FormMode.ADD && !forceUpdate) return;
+
+    try {
+
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw Exception('Location services are disabled.');
+      }
+
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+          throw Exception('Location permissions are permanently denied or denied.');
+        }
+      }
+      
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+
+      );
+      
+
+      if (mounted) {
+        setState(() {
+          _latController.text = position.latitude.toStringAsFixed(6);
+          _lonController.text = position.longitude.toStringAsFixed(6);
+        });
+      }
+      
+    } catch (e) {
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not get GPS location: $e')),
+        );
+      }
+
+    }
+  }
 
 
   void _switchToAddMode() {
@@ -58,13 +107,14 @@ class _NewEntryPageState extends State<NewEntryPage> {
       _currentMode = FormMode.ADD;
       _landmarkToEdit = null;
       _titleController.clear();
-      _latController.text = _kInitialLat.toString(); 
-      _lonController.text = _kInitialLon.toString(); 
       _newImageFilePath = null;
     });
+    
+
+    _getCurrentLocation();
   }
   
-  // Sets the form to EDIT mode with data from a selected landmark
+
   void _switchToEditMode(Landmark landmark) {
     setState(() {
       _currentMode = FormMode.EDIT;
@@ -72,24 +122,17 @@ class _NewEntryPageState extends State<NewEntryPage> {
       _titleController.text = landmark.title;
       _latController.text = landmark.lat.toString();
       _lonController.text = landmark.lon.toString();
-      _newImageFilePath = null; // Clear selected image path for safety
+      _newImageFilePath = null; 
     });
   }
-
 
 
   void _handleOperationComplete() {
-  if (_currentMode == FormMode.ADD) {
-    
-    _titleController.clear();
-    _latController.text = _kInitialLat.toString();
-    _lonController.text = _kInitialLon.toString();
-    setState(() {
-      _newImageFilePath = null;
-    });
+    if (_currentMode == FormMode.ADD) {
+      
+      _switchToAddMode();
+    }
   }
-
-}
 
 
   String? _coordinateValidator(String? value) {
@@ -170,7 +213,7 @@ class _NewEntryPageState extends State<NewEntryPage> {
     String successMessage = '';
 
     if (_currentMode == FormMode.ADD) {
-      // --- ADD/CREATE (POST) ---
+
       await ApiService().createLandmark(
         title: title,
         lat: lat,
@@ -282,6 +325,13 @@ class _NewEntryPageState extends State<NewEntryPage> {
         title: Text(appBarTitle, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
+          // Refresh GPS button
+          if (isAddMode)
+            IconButton(
+              icon: const Icon(Icons.gps_fixed), 
+              tooltip: 'Get Current GPS Location',
+              onPressed: () => _getCurrentLocation(forceUpdate: true), // Force update location
+            ),
 
           if (isAddMode)
             IconButton(
